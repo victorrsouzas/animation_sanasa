@@ -27,14 +27,6 @@ class CustomCard extends StatefulWidget {
 class _CustomCardState extends State<CustomCard> {
   @override
   Widget build(BuildContext context) {
-    bool _isLoading = true;
-
-    void _toggleLoading() {
-      setState(() {
-        _isLoading = !_isLoading;
-      });
-    }
-
     return Shimmer(
       gradient: ThemeColors.shimmerGradient,
       child: Card(

@@ -36,8 +36,6 @@ class _GerenciamentoContasScreenState extends State<GerenciamentoContasScreen> {
 
   @override
   void dispose() {
-    codController;
-    isSearch;
     super.dispose();
   }
 

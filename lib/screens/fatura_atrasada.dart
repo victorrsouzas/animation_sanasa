@@ -30,8 +30,6 @@ class _FaturaAtrasadaScreenState extends State<FaturaAtrasadaScreen> {
 
   @override
   void dispose() {
-    cpfController;
-    isSearch;
     super.dispose();
   }
 

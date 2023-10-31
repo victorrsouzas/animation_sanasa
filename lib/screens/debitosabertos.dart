@@ -117,6 +117,12 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
               textAlign: TextAlign.start,
             ),
           ),
+          DataCell(
+            Text(
+              "R\$ ${debito.valor}", // Converter número do mês para nome do mês
+              textAlign: TextAlign.start,
+            ),
+          ),
           const DataCell(
             Icon(Icons.qr_code),
           ),
@@ -288,6 +294,12 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
                                           DataColumn(
                                             label: Text(
                                               'Mês',
+                                              textAlign: TextAlign.start,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Valor',
                                               textAlign: TextAlign.start,
                                             ),
                                           ),

@@ -1,5 +1,5 @@
 class Debito {
-  final String debitoId;
+  final int debitoId; // Change the type to int
   final int mes;
   final int ano;
   final double valor;
@@ -19,13 +19,13 @@ class Debito {
 
   factory Debito.fromJson(Map<String, dynamic> json) {
     return Debito(
-      debitoId: json['debitoId'] ?? '',
-      mes: json['mes'] ?? '',
-      ano: json['ano'] ?? '',
-      valor: json['valor'] ?? '',
-      dataVencimento: DateTime.parse(json['dataVencimento'] ?? ''),
-      cpfCnpj: json['cpfCnpj'] ?? '',
-      codigoConsumidor: json['codigoConsumidor'] ?? '',
+      debitoId: json['debitoId'] as int, // Cast to int
+      mes: json['mes'] as int, // Cast to int for safety
+      ano: json['ano'] as int, // Cast to int for safety
+      valor: json['valor'].toDouble(), // Convert to double for safety
+      dataVencimento: DateTime.parse(json['dataVencimento']),
+      cpfCnpj: json['cpfCnpj'] as String,
+      codigoConsumidor: json['codigoConsumidor'] as String,
     );
   }
 }
