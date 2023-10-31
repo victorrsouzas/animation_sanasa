@@ -152,7 +152,6 @@ class _DesvincularInteresseScreenState
             Center(
               child: Container(
                 width: screenWidth * 0.9,
-                height: screenHeight * 0.3,
                 decoration: ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(

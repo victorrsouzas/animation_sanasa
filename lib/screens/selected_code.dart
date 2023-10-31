@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:animation_sanasa/models/contas.dart';
-import 'package:animation_sanasa/screens/cadastro_interressado.dart';
-import 'package:animation_sanasa/screens/desvincular_interressado.dart';
 import 'package:animation_sanasa/screens/home.dart';
 import 'package:animation_sanasa/screens/login.dart';
 import 'package:animation_sanasa/themes/theme_colors.dart';
@@ -77,8 +75,8 @@ class _SelectedCodeState extends State<SelectedCode> {
       ),
       body: contas.isEmpty
           ? const Center(child: CircularProgressIndicator.adaptive())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: Column(
                 children: [
                   const SizedBox(
@@ -112,190 +110,100 @@ class _SelectedCodeState extends State<SelectedCode> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Center(
-                    child: Container(
-                      width: screenWidth * 0.9,
-                      height: screenHeight * 0.7,
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            side: const BorderSide(
-                              width: 1,
-                              color: Color(ThemeColors.borderInput),
-                            ),
-                            borderRadius: BorderRadius.circular(4)),
+                  Column(
+                    children: [
+                      Container(
+                        width: screenWidth * 0.9,
+                        height: screenHeight * 0.4,
+                        decoration: ShapeDecoration(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Color(ThemeColors.borderInput),
+                              ),
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: ListView.builder(
+                            shrinkWrap: true, // Adicione esta linha
+                            //physics: const NeverScrollableScrollPhysics(),
+                            itemCount: contas.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Column(
+                                children: [
+                                  CardCheckbox(
+                                    index: index,
+                                    title:
+                                        "Cód ${contas[index].codigoConsumidor}",
+                                    description:
+                                        " ${contas[index].tipoLogradouro} ${contas[index].logradouro}, ${contas[index].numero} - ${contas[index].bairro}",
+                                    selectedCardIndex: selectedCardIndex,
+                                    onCardSelected: (int newIndex) {
+                                      setState(() {
+                                        selectedCardIndex = newIndex;
+                                        selectedCardTitle =
+                                            contas[newIndex].codigoConsumidor;
+                                        Env.storeCod(selectedCardTitle!);
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(height: 20.0),
+                                  SizedBox(
+                                    width: screenWidth *
+                                        0.8, // Ajuste a largura conforme necessário
+                                    child: const Divider(
+                                      color: Color(ThemeColors
+                                          .borderInput), // Cor da linha
+                                      thickness: 1.0, // Espessura da linha
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20.0),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            ListView.builder(
-                              shrinkWrap: true, // Adicione esta linha
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: contas.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Column(
-                                  children: [
-                                    CardCheckbox(
-                                      index: index,
-                                      title:
-                                          "Cód ${contas[index].codigoConsumidor}",
-                                      description:
-                                          " ${contas[index].tipoLogradouro} ${contas[index].logradouro}, ${contas[index].numero} - ${contas[index].bairro}",
-                                      subdescription: "XXXXXXXXXXXXX",
-                                      selectedCardIndex: selectedCardIndex,
-                                      onCardSelected: (int newIndex) {
-                                        setState(() {
-                                          selectedCardIndex = newIndex;
-                                          selectedCardTitle =
-                                              contas[newIndex].codigoConsumidor;
-                                          Env.storeCod(selectedCardTitle!);
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    SizedBox(
-                                      width: screenWidth *
-                                          0.8, // Ajuste a largura conforme necessário
-                                      child: const Divider(
-                                        color: Color(ThemeColors
-                                            .borderInput), // Cor da linha
-                                        thickness: 1.0, // Espessura da linha
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                  ],
-                                );
-                              },
-                            ),
-                            /* Container(
-                              alignment: Alignment.centerLeft,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              child: TextButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.add_circle,
-                                  color: ThemeColors.primary,
-                                  size: 14,
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: screenWidth * 0.8,
+                    height: screenHeight * 0.06,
+                    child: ElevatedButton(
+                      onPressed: selectedCardIndex != -1
+                          ? () {
+                              // Coloque seu código de navegação aqui.
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => const Home(),
                                 ),
-                                label: const Text(
-                                  "Novo Endereço",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFF428BCA),
-                                    fontSize: 14,
-                                    fontFamily: 'Lato',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ), */
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              child: TextButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const CadastrarInteresseScreen(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.add_circle_outlined,
-                                  color: ThemeColors.primary,
-                                  size: 14,
-                                ),
-                                label: const Text(
-                                  "Cadastrar Interesse",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFF428BCA),
-                                    fontSize: 14,
-                                    fontFamily: 'Lato',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              child: TextButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const DesvincularInteresseScreen(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.add_circle_outlined,
-                                  color: ThemeColors.primary,
-                                  size: 14,
-                                ),
-                                label: const Text(
-                                  "Desvincular Interesse",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFF428BCA),
-                                    fontSize: 14,
-                                    fontFamily: 'Lato',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-                            SizedBox(
-                              width: screenWidth * 0.8,
-                              height: screenHeight * 0.06,
-                              child: ElevatedButton(
-                                onPressed: selectedCardIndex != -1
-                                    ? () {
-                                        // Coloque seu código de navegação aqui.
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                            builder: (context) => const Home(),
-                                          ),
-                                        );
-                                      }
-                                    : null,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: ThemeColors.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Text(
-                                    'Avançar',
-                                    style: TextStyle(
-                                      color: Color(0xFFF1F5F4),
-                                      fontSize: 12,
-                                      fontFamily: 'Lato',
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
+                              );
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ThemeColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          'Avançar',
+                          style: TextStyle(
+                            color: Color(0xFFF1F5F4),
+                            fontSize: 12,
+                            fontFamily: 'Lato',
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

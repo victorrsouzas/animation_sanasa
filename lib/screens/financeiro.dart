@@ -17,7 +17,6 @@ class _FinanceiroScreenState extends State<FinanceiroScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(ThemeColors.background),
       appBar: const CustomMenuBar(),
@@ -60,7 +59,6 @@ class _FinanceiroScreenState extends State<FinanceiroScreen> {
                   builder: (BuildContext context, BoxConstraints constraints) {
                 return Container(
                   width: screenWidth * 0.9,
-                  height: screenHeight * 0.6,
                   decoration: ShapeDecoration(
                     color: Colors.white,
                     shape: RoundedRectangleBorder(

@@ -202,6 +202,7 @@ class _SegundaViaScreenState extends State<SegundaViaScreen> {
   Future<void> _fetchToken() async {
     meuToken = await Env.getToken();
     cod = await Env.getCod();
+    codController.text = cod!;
     const url = 'https://portal-dev.sanasa.com.br/api/app/consumidores';
 
     final response = await http.get(
@@ -327,7 +328,6 @@ class _SegundaViaScreenState extends State<SegundaViaScreen> {
                     Center(
                       child: Container(
                         width: screenWidth * 0.9,
-                        height: screenHeight * 0.7,
                         decoration: ShapeDecoration(
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -372,8 +372,7 @@ class _SegundaViaScreenState extends State<SegundaViaScreen> {
                                 controller: codController,
                                 isDropbutton:
                                     true, // Isso indica que é um dropdown
-                                dropdownItems:
-                                    dropdownCodigosConsumidor, // Passa os itens do dropdown
+                                dropdownItems: dropdownCodigosConsumidor,
                               ),
                               const SizedBox(
                                 height: 40,
@@ -475,7 +474,6 @@ class _SegundaViaScreenState extends State<SegundaViaScreen> {
                                   ],
                                 ),
                               ),
-                              const Spacer(),
                               SizedBox(
                                 width: screenWidth * 0.8,
                                 height: screenHeight * 0.06,

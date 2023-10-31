@@ -174,7 +174,7 @@ class _HomeState extends ConsumerState<Home>
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color(ThemeColors.background),
       appBar: const CustomMenuBar(),
@@ -272,7 +272,6 @@ class _HomeState extends ConsumerState<Home>
                   Center(
                     child: Container(
                       width: screenWidth * 0.9,
-                      height: screenHeight * 0.35,
                       decoration: ShapeDecoration(
                         color: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -317,16 +316,13 @@ class _HomeState extends ConsumerState<Home>
                               thickness: 1.0, // Espessura da linha
                             ),
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
                           AnimatedBuilder(
                             animation: _animationController,
                             child: ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24),
                               itemCount: availableServices.length,
                               itemBuilder: (ctx, index) {
                                 final service = availableServices[index];

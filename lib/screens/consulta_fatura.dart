@@ -37,6 +37,7 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
   Future<void> _fetchToken() async {
     meuToken = await Env.getToken();
     cod = await Env.getCod();
+    codController.text = cod!;
     const url = 'https://portal-dev.sanasa.com.br/api/app/consumidores';
 
     final response = await http.get(
@@ -188,7 +189,6 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
                     Center(
                       child: Container(
                         width: screenWidth * 0.9,
-                        height: screenHeight * 0.6,
                         decoration: ShapeDecoration(
                           color: Colors.white,
                           shape: RoundedRectangleBorder(

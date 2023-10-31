@@ -151,7 +151,6 @@ class _CadastrarInteresseScreenState extends State<CadastrarInteresseScreen> {
             Center(
               child: Container(
                 width: screenWidth * 0.9,
-                height: screenHeight * 0.3,
                 decoration: ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
@@ -176,7 +175,7 @@ class _CadastrarInteresseScreenState extends State<CadastrarInteresseScreen> {
                           child: const Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Digite o código de consumidor de interesse',
+                              'Digite o CPF ou CNPJ do interessado',
                               style: TextStyle(
                                 color: Color(0xFF212529),
                                 fontSize: 12,
@@ -191,7 +190,7 @@ class _CadastrarInteresseScreenState extends State<CadastrarInteresseScreen> {
                         height: 20,
                       ),
                       CustomInputField(
-                        labelText: "Código do consumidor",
+                        labelText: "CPF/CNPJ",
                         controller: codController,
                         validatorNumber: true,
                       ),

@@ -5,7 +5,7 @@ class CardCheckbox extends StatelessWidget {
   final int index;
   final String title;
   final String description;
-  final String subdescription;
+
   final int selectedCardIndex;
   final Function(int) onCardSelected;
 
@@ -14,7 +14,6 @@ class CardCheckbox extends StatelessWidget {
     required this.index,
     required this.title,
     required this.description,
-    required this.subdescription,
     required this.selectedCardIndex,
     required this.onCardSelected,
   }) : super(key: key);
@@ -55,7 +54,7 @@ class CardCheckbox extends StatelessWidget {
                     ),
                     const SizedBox(height: 20), // Espaçamento entre os textos
                     Text(
-                      "$description\n\n Tarifa Social: $subdescription",
+                      "$description",
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(ThemeColors.textColorCard),

@@ -64,9 +64,6 @@ class ServiceListItem extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(
-            height: 15,
-          ),
           SizedBox(
             width: screenWidth * 0.9, // Ajuste a largura conforme necessário
             child: const Divider(

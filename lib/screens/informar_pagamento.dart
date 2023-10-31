@@ -41,6 +41,7 @@ class _InformarPagamentoScreenState extends State<InformarPagamentoScreen> {
   Future<void> _fetchToken() async {
     meuToken = await Env.getToken();
     cod = await Env.getCod();
+    codController.text = cod!;
     const url = 'https://portal-dev.sanasa.com.br/api/app/consumidores';
 
     final response = await http.get(
@@ -192,7 +193,6 @@ class _InformarPagamentoScreenState extends State<InformarPagamentoScreen> {
                     Center(
                       child: Container(
                         width: screenWidth * 0.9,
-                        height: screenHeight * 0.6,
                         decoration: ShapeDecoration(
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -337,7 +337,9 @@ class _InformarPagamentoScreenState extends State<InformarPagamentoScreen> {
                                       .toList(), // Add this block
                                 ),
                               ),
-                              const Spacer(),
+                              const SizedBox(
+                                height: 30,
+                              ),
                               SizedBox(
                                 width: screenWidth * 0.8,
                                 height: screenHeight * 0.06,

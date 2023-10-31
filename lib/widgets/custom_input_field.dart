@@ -10,6 +10,7 @@ class CustomInputField extends StatefulWidget {
   final Function()? onTapCallback;
   final List<DropdownMenuItem<String>>? dropdownItems;
   final bool validatorNumber;
+  final Function(String)? onDropdownChanged;
 
   const CustomInputField({
     super.key,
@@ -21,6 +22,7 @@ class CustomInputField extends StatefulWidget {
     this.onTapCallback,
     this.dropdownItems,
     this.validatorNumber = false,
+    this.onDropdownChanged,
   });
 
   @override
@@ -29,6 +31,16 @@ class CustomInputField extends StatefulWidget {
 
 class _CustomInputFieldState extends State<CustomInputField> {
   String? selectedDropdownValue;
+
+  @override
+  void initState() {
+    super.initState();
+    // Se o widget é do tipo dropdown e o controller possui valor, use-o como valor padrão
+    if (widget.isDropbutton && widget.controller.text.isNotEmpty) {
+      selectedDropdownValue = widget.controller.text;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -71,6 +83,9 @@ class _CustomInputFieldState extends State<CustomInputField> {
                   setState(() {
                     selectedDropdownValue = newValue;
                   });
+                  if (widget.onDropdownChanged != null) {
+                    widget.onDropdownChanged!(newValue ?? '');
+                  }
                 },
                 underline: Container(), // Remove a linha de seleção padrão
               ),
