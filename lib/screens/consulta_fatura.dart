@@ -147,7 +147,7 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color(ThemeColors.background),
       appBar: const CustomMenuBar(),
