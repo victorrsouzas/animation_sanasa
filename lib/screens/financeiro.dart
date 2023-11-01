@@ -1,6 +1,5 @@
 import 'package:animation_sanasa/screens/consulta_fatura.dart';
 import 'package:animation_sanasa/screens/debitosabertos.dart';
-import 'package:animation_sanasa/screens/informar_pagamento.dart';
 import 'package:animation_sanasa/screens/segunda_via.dart';
 import 'package:animation_sanasa/themes/theme_colors.dart';
 import 'package:animation_sanasa/widgets/custom_menubar.dart';
@@ -158,60 +157,6 @@ class _FinanceiroScreenState extends State<FinanceiroScreen> {
                               ),
                               const SizedBox(
                                 height: 20,
-                              ),
-                              ExpansionTile(
-                                title: const Text(
-                                  "Parcelamento e Pagamento de Faturas Atrasadas",
-                                  style: TextStyle(
-                                    color: ThemeColors.primary,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                children: [
-                                  /* ListTile(
-                                    leading: const Icon(
-                                      Icons.arrow_circle_right_outlined,
-                                      color: ThemeColors.primary,
-                                    ),
-                                    title: const Text(
-                                      'Faturas Atrasadas',
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        color: ThemeColors.primary,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      // Navegue para a página 2via
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            const FaturaAtrasadaScreen(),
-                                      ));
-                                    },
-                                  ), */
-                                  ListTile(
-                                    leading: const Icon(
-                                      Icons.arrow_circle_right_outlined,
-                                      color: Color(ThemeColors.textColorCard),
-                                    ),
-                                    title: const Text(
-                                      'Informar Pagamento de Fatura atrasada',
-                                      style: TextStyle(
-                                        color: Color(ThemeColors.textColorCard),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      // Navegue para a página teste de via
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            const InformarPagamentoScreen(),
-                                      ));
-                                    },
-                                  ),
-                                ],
                               ),
                             ],
                           ),

@@ -21,7 +21,7 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
   List<Conta> contas = [];
   String? cod;
   List<DropdownMenuItem<String>> dropdownCodigosConsumidor = [];
-  bool isSearch = false;
+  bool isLoading = false;
   List<DebitoInfo> debitos = [];
 
   @override
@@ -30,12 +30,17 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
     _fetchToken();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _fetchToken() async {
     meuToken = await Env.getToken();
     cod = await Env.getCod();
     codController.text = cod!;
     _fetchTokenDebitos(codController.text);
-    const url = 'https://portal-dev.sanasa.com.br/api/financeiro/debitos';
+    const url = 'https://portal-dev.sanasa.com.br/api/app/consumidores';
 
     final response = await http.get(
       Uri.parse(url),
@@ -66,7 +71,7 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
 
   Future<void> _fetchTokenDebitos(String cod) async {
     meuToken = await Env.getToken();
-    const url = 'https://portal-dev.sanasa.com.br/api/app/debitos';
+    const url = 'https://portal-dev.sanasa.com.br/api/financeiro/debitos';
 
     final response = await http.get(
       Uri.parse(url),
@@ -79,7 +84,6 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
       var data = jsonDecode(response.body);
       List<dynamic> dadosJson = data['dados'];
       debitos = _createDebitoList(dadosJson);
-      isSearch = true;
     } else {
       print('Erro ao buscar os dados: ${response.statusCode}');
     }
@@ -88,7 +92,6 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
 
   List<DebitoInfo> _createDebitoList(List<dynamic> dadosJson) {
     List<DebitoInfo> list = [];
-
     for (var item in dadosJson) {
       if (item['codigoConsumidor'] == cod) {
         list.add(DebitoInfo(item['mes'], item['ano'], item['valor']));
@@ -98,25 +101,45 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
     return list;
   }
 
-  void _updateTable(String cod) {
+  void _updateTable(String codUpdate) {
+    cod = codUpdate;
     debitos = [];
-    _fetchTokenDebitos(cod);
+    _fetchTokenDebitos(cod!);
   }
 
   List<DataRow> createDataRows() {
-    return debitos.map(
+    isLoading = true;
+    List<DataRow> rows = debitos.map(
       (debito) {
         return DataRow(
           cells: [
-            DataCell(Text("${debito.mes}/${debito.ano}")),
-            DataCell(Text("${debito.valor}")),
-            DataCell(Icon(Icons.content_copy)), // Para copiar código
+            DataCell(Text("${months[debito.mes]}/${debito.ano}")),
+            DataCell(Text("R\$ ${debito.valor}")),
             DataCell(Icon(Icons.download)), // Para baixar PDF
           ],
         );
       },
     ).toList();
+
+    isLoading = false;
+    return rows;
   }
+
+  final months = [
+    '',
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -225,40 +248,37 @@ class _ConsultaDebitosScreenState extends State<ConsultaDebitosScreen> {
                                         ],
                                       ),
                                     )
-                                  : SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: isSearch
-                                          ? DataTable(
-                                              columns: const [
-                                                DataColumn(
-                                                  label: Text(
-                                                    'Referência',
-                                                    textAlign: TextAlign.start,
-                                                  ),
+                                  : isLoading
+                                      ? Center(
+                                          child: CircularProgressIndicator
+                                              .adaptive(),
+                                        )
+                                      : SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: DataTable(
+                                            columns: const [
+                                              DataColumn(
+                                                label: Text(
+                                                  'Referência',
+                                                  textAlign: TextAlign.start,
                                                 ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    'Valor',
-                                                    textAlign: TextAlign.start,
-                                                  ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Valor',
+                                                  textAlign: TextAlign.start,
                                                 ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    'Copiar\nCódigo',
-                                                    textAlign: TextAlign.start,
-                                                  ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Baixar\nPDF',
+                                                  textAlign: TextAlign.start,
                                                 ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    'Baixar\nPDF',
-                                                    textAlign: TextAlign.start,
-                                                  ),
-                                                )
-                                              ],
-                                              rows: createDataRows(),
-                                            )
-                                          : null,
-                                    ),
+                                              )
+                                            ],
+                                            rows: createDataRows(),
+                                          ),
+                                        ),
                               const SizedBox(height: 20),
                             ],
                           ),

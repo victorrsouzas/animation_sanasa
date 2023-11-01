@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:animation_sanasa/models/contas.dart';
-import 'package:animation_sanasa/models/debitos.dart';
 import 'package:animation_sanasa/themes/theme_colors.dart';
 import 'package:animation_sanasa/utils/env.dart';
 import 'package:animation_sanasa/widgets/custom_input_field.dart';
@@ -22,22 +21,22 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
   List<Conta> contas = [];
   String? cod;
   List<DropdownMenuItem<String>> dropdownCodigosConsumidor = [];
-  List<Debito> debitos = [];
-  List<Debito> filteredDebitos = [];
-  bool isSearch = false;
+  List<DebitoInfo> debitos = [];
+  bool isLoading = false;
   final TextEditingController yearController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _fetchToken();
-    _fetchTokenDebitos();
   }
 
   Future<void> _fetchToken() async {
     meuToken = await Env.getToken();
     cod = await Env.getCod();
     codController.text = cod!;
+    _fetchTokenDebitos(codController.text);
+    yearController.text = "2023";
     const url = 'https://portal-dev.sanasa.com.br/api/app/consumidores';
 
     final response = await http.get(
@@ -67,9 +66,9 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
     setState(() {}); // Isso fará com que a UI reconstrua se necessário
   }
 
-  Future<void> _fetchTokenDebitos() async {
+  Future<void> _fetchTokenDebitos(String cod) async {
     meuToken = await Env.getToken();
-    const url = 'https://portal-dev.sanasa.com.br/api/app/debitos';
+    const url = 'https://portal-dev.sanasa.com.br/api/financeiro/debitos';
 
     final response = await http.get(
       Uri.parse(url),
@@ -81,48 +80,52 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       List<dynamic> dadosJson = data['dados'];
-      debitos = dadosJson.map((json) => Debito.fromJson(json)).toList();
-      print(data);
+      debitos = _createDebitoList(dadosJson);
     } else {
       print('Erro ao buscar os dados: ${response.statusCode}');
     }
     setState(() {}); // Isso fará com que a UI reconstrua se necessário
   }
 
-  void searchDebito() {
-    String cpfInput = codController.text.trim();
-    setState(() {
-      filteredDebitos =
-          debitos.where((debito) => debito.cpfCnpj == cpfInput).toList();
-    });
+  List<DebitoInfo> _createDebitoList(List<dynamic> dadosJson) {
+    List<DebitoInfo> list = [];
+    for (var item in dadosJson) {
+      if (item['codigoConsumidor'] == cod) {
+        list.add(DebitoInfo(item['mes'], item['ano'], item['valor']));
+      }
+    }
+
+    return list;
   }
 
-  List<DataRow> createDataRows(List<Debito> debitos) {
-    return debitos.map((debito) {
-      return DataRow(
-        cells: [
-          const DataCell(
-            Icon(
-              Icons
-                  .cancel, // Coloque sua lógica para definir o ícone baseado no status aqui
-              color: Colors.red,
+  void _updateTable(String codUpdate) {
+    cod = codUpdate;
+    debitos = [];
+    _fetchTokenDebitos(cod!);
+  }
+
+  List<DataRow> createDataRows() {
+    isLoading = true;
+    List<DataRow> rows = debitos.map(
+      (debito) {
+        return DataRow(
+          cells: [
+            DataCell(
+              Icon(
+                Icons.cancel,
+                color: Colors.red,
+              ),
             ),
-          ),
-          DataCell(
-            Text(
-              "${months[debito.mes]} ${debito.ano}", // Converter número do mês para nome do mês
-              textAlign: TextAlign.start,
-            ),
-          ),
-          const DataCell(
-            Icon(Icons.qr_code),
-          ),
-          const DataCell(
-            Icon(Icons.file_copy),
-          )
-        ],
-      );
-    }).toList();
+            DataCell(Text("${months[debito.mes]}/${debito.ano}")),
+            DataCell(Text("R\$ ${debito.valor}")),
+            DataCell(Icon(Icons.download)), // Para baixar PDF
+          ],
+        );
+      },
+    ).toList();
+
+    isLoading = false;
+    return rows;
   }
 
   final months = [
@@ -232,8 +235,10 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
                                 controller: codController,
                                 isDropbutton:
                                     true, // Isso indica que é um dropdown
-                                dropdownItems:
-                                    dropdownCodigosConsumidor, // Passa os itens do dropdown
+                                dropdownItems: dropdownCodigosConsumidor,
+                                onDropdownChanged: (newCod) {
+                                  _updateTable(newCod);
+                                }, // Passa os itens do dropdown
                               ),
                               const SizedBox(
                                 height: 30,
@@ -275,72 +280,50 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
                               const SizedBox(
                                 height: 30,
                               ),
-                              SizedBox(
-                                width: screenWidth * 0.8,
-                                height: screenHeight * 0.06,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isSearch = true;
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: ThemeColors.primary,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Text(
-                                      'Consultar',
-                                      style: TextStyle(
-                                        color: Color(0xFFF1F5F4),
-                                        fontSize: 12,
-                                        fontFamily: 'Lato',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: isSearch
-                                    ? DataTable(
-                                        columns: const [
-                                          DataColumn(
-                                            label: Text(
-                                              'Status',
-                                              textAlign: TextAlign.start,
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Mês',
-                                              textAlign: TextAlign.start,
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Copiar\nCódigo',
-                                              textAlign: TextAlign.start,
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Baixar\nPDF',
-                                              textAlign: TextAlign.start,
-                                            ),
-                                          )
+                              debitos.isEmpty
+                                  ? Center(
+                                      child: Column(
+                                        children: [
+                                          Text("Sem nenhum débito neste código")
                                         ],
-                                        rows: createDataRows(debitos),
-                                      )
-                                    : null,
-                              ),
+                                      ),
+                                    )
+                                  : isLoading
+                                      ? Center(
+                                          child: CircularProgressIndicator
+                                              .adaptive(),
+                                        )
+                                      : SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: DataTable(
+                                            columns: const [
+                                              DataColumn(
+                                                label: Text(
+                                                  'Status',
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Referência',
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Valor',
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Baixar\nPDF',
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              )
+                                            ],
+                                            rows: createDataRows(),
+                                          )),
                               const SizedBox(height: 20),
                             ],
                           ),
@@ -353,4 +336,12 @@ class _ConsultaFaturasScreenState extends State<ConsultaFaturasScreen> {
             ),
     );
   }
+}
+
+class DebitoInfo {
+  final int mes;
+  final int ano;
+  final double valor;
+
+  DebitoInfo(this.mes, this.ano, this.valor);
 }

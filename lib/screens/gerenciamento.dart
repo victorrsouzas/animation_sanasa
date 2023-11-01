@@ -73,21 +73,6 @@ class _GerenciamentoContasScreenState extends State<GerenciamentoContasScreen> {
     setState(() {}); // Isso fará com que a UI reconstrua se necessário
   }
 
-  List<ConsumidorInfo> _createConsumidorList(List<dynamic> dadosJson) {
-    List<ConsumidorInfo> list = [];
-
-    for (var item in dadosJson) {
-      list.add(ConsumidorInfo(item['cpfCnpjVinculado'], "Interessado"));
-    }
-    return list;
-  }
-
-  void _updateTable(String codUpdate) {
-    cod = codUpdate;
-    consumidores = [];
-    _fetchTokenList(cod!);
-  }
-
   Future<void> _fetchTokenList(String cod) async {
     meuToken = await Env.getToken();
     final url =
@@ -109,6 +94,21 @@ class _GerenciamentoContasScreenState extends State<GerenciamentoContasScreen> {
       print('Erro ao buscar os dados: ${response.statusCode}');
     }
     setState(() {}); // Isso fará com que a UI reconstrua se necessário
+  }
+
+  List<ConsumidorInfo> _createConsumidorList(List<dynamic> dadosJson) {
+    List<ConsumidorInfo> list = [];
+
+    for (var item in dadosJson) {
+      list.add(ConsumidorInfo(item['cpfCnpjVinculado'], "Interessado"));
+    }
+    return list;
+  }
+
+  void _updateTable(String codUpdate) {
+    cod = codUpdate;
+    consumidores = [];
+    _fetchTokenList(cod!);
   }
 
   List<DataRow> createDataRows() {
@@ -166,74 +166,47 @@ class _GerenciamentoContasScreenState extends State<GerenciamentoContasScreen> {
     ).toList();
   }
 
+  void _showErrorDialog(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Erro de Validação"),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Feche o pop-up
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> sendPostRequest(String cod) async {
     // Validando o tamanho do CPF/CNPJ
     int length = cpfCnpjController.text
         .replaceAll(RegExp('[^0-9]'), '')
         .length; // Remove caracteres não numéricos e conta os dígitos
+
     if (length != 11 && length != 14) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Erro de Validação"),
-            content: const Text(
-                "O CPF ou CNPJ inserido é inválido. Certifique-se de que tenha 11 ou 14 dígitos."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Feche o pop-up
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog(context,
+          "O CPF ou CNPJ inserido é inválido. Certifique-se de que tenha 11 ou 14 dígitos.");
       return; // Encerra a execução da função aqui
     }
-    if (cpfCnpjController.text.length == 11) {
-      if (!CPF.isValid(cpfCnpjController.text)) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Erro de Validação"),
-              content: const Text("O CPF inserido é inválido."),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Feche o pop-up
-                  },
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else if (cpfCnpjController.text.length == 14) {
-      if (!CNPJ.isValid(cpfCnpjController.text)) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Erro de Validação"),
-              content: const Text("O CNPJ inserido é inválido."),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Feche o pop-up
-                  },
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
-        );
-      }
+
+    if (length == 11 && !CPF.isValid(cpfCnpjController.text)) {
+      _showErrorDialog(context, "O CPF inserido é inválido.");
+      return;
     }
 
+    if (length == 14 && !CNPJ.isValid(cpfCnpjController.text)) {
+      _showErrorDialog(context, "O CNPJ inserido é inválido.");
+      return;
+    }
     const url =
         'https://portal-dev.sanasa.com.br/api/app/consumidores/vincularcpfcnpjconsumidor';
     meuToken = await Env.getToken();
@@ -521,7 +494,7 @@ class _GerenciamentoContasScreenState extends State<GerenciamentoContasScreen> {
                                     child: const Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        'Digite o CPF ou CNPJ do interessado',
+                                        'Digite o CPF ou CNPJ do interessado, só os numeros',
                                         style: TextStyle(
                                           color: Color(0xFF212529),
                                           fontSize: 12,
