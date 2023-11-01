@@ -53,11 +53,23 @@ dependencies:
   jwt_decode: ^0.3.1
   flutter_svg: ^2.0.8
   mockito: ^5.4.2
+  
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "assets/icons/sanasaapp.png"
+  adaptive_icon_foreground: "assets/icons/sanasaapp.png"
+  image_path: "assets/icons/sanasaapp.png"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
